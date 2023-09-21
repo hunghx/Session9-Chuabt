@@ -1,77 +1,73 @@
 package service;
 
 
+import model.Catalog;
 import model.Product;
-import util.MyListCatalog;
-import util.MyListProduct;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class ProductService implements IGeneric<Product,Long> {
-    private MyListProduct productMyList = new MyListProduct();
+    private List<Product> products = new ArrayList<>();
+
     @Override
-    public Product[] findAll() {
-        return productMyList.findAll();
+    public List<Product> findAll() {
+        return products;
     }
 
     @Override
     public Product findById(Long id) {
-        return productMyList.get(findIndexById(id));
+        for (Product p: products) {
+            if (Objects.equals(p.getId(), id)){
+                return p;
+            }
+        }
+
+        return null;
     }
 
     @Override
     public void delete(Long id) {
-        productMyList.delete(findIndexById(id));
+        products.remove(findById(id));
     }
 
     @Override
     public void add(Product product) {
-        productMyList.add(product);
+        products.add(product);
     }
 
     @Override
     public void update(Product product) {
-        productMyList.update(product,findIndexById(product.getId()));
+        products.set(products.indexOf(findById(product.getId())), product);
     }
 
     @Override
-    public int findIndexById(Long id) {
-        for (int i = 0; i < findAll().length; i++) {
-            Product pro = findAll()[i];
-            if (pro!=null && Objects.equals(pro.getId(), id)){
-                return i;
-            }
-        }
-        return -1;
-    }
-    @Override
     public Long getNewId() {
         Long idMax = 0L;
-        for (Product cat:findAll()) {
-            if (cat!=null&& cat.getId()>idMax){
-                idMax = cat.getId();
+        for (Product c:products
+        ) {
+            if (c.getId()>idMax){
+                idMax= c.getId();
             }
         }
         return idMax+1;
     }
-    public int size(){
-        return productMyList.getSize();
-    }
-    public Product[] searchByName(String name){
-        MyListProduct pros = new MyListProduct();
-        for (Product pro:findAll()) {
-            if (pro!=null&& pro.getName().contains(name)){
-                pros.add(pro);
-            }
-        }
-        return pros.findAll();
-    }
-    public boolean existByCatalogId(Long catId){
-        for (Product p: findAll()) {
-            if (p!=null && Objects.equals(p.getCatalog().getId(), catId)){
+    public boolean existByCatalogId(Long id){
+        for (Product p: products) {
+            if (Objects.equals(p.getCatalog().getId(), id)){
                 return true;
             }
         }
         return false;
+    }
+    public List<Product> searchByName(String name){
+        List<Product> search = new ArrayList<>();
+        for (Product p: products) {
+            if (p.getName().contains(name)){
+                search.add(p);
+            }
+        }
+        return search;
     }
 }

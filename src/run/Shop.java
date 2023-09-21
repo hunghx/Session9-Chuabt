@@ -69,10 +69,12 @@ public class Shop {
 
     // hiển thị danh sachs dnah mục
     public static void displayAllCatalog() {
+        if (catalogService.findAll().isEmpty()){
+            System.err.println("danh sách rỗng");
+            return;
+        }
         for (Catalog cat : catalogService.findAll()) {
-            if (cat != null) {
                 System.out.println(cat);
-            }
         }
     }
 
@@ -89,13 +91,12 @@ public class Shop {
     public static void editCatalog() {
         // nhập vào id
         Long id = InputMethods.getLong();
-        int index = catalogService.findIndexById(id);
-        if (index == -1) {
+        Catalog catalog = catalogService.findById(id);
+        if (catalog==null) {
             System.err.println("id không tồn tại");
             return;
         }
         // cho phép sửa
-        Catalog catalog = catalogService.findById(id);
         catalog.input();
         catalogService.update(catalog);
     }
@@ -103,8 +104,8 @@ public class Shop {
     // xóa
     public static void delete() {
         Long id = InputMethods.getLong();
-        int index = catalogService.findIndexById(id);
-        if (index == -1) {
+        Catalog catalog = catalogService.findById(id);
+        if (catalog==null) {
             System.err.println("id không tồn tại");
             return;
         }
@@ -156,16 +157,14 @@ public class Shop {
     }
     public static void displayAllProduct() {
         for (Product pro : productService.findAll()) {
-            if (pro != null) {
                 System.out.println(pro);
-            }
         }
     }
 
     // thêm mới
     public static void addNewProduct() {
         // kieemr tra danh sach ddanh muc cos null khong
-        if (catalogService.size()==0){
+        if (catalogService.findAll().isEmpty()){
             System.err.println("danh muc trong");
             return;
         }
@@ -176,7 +175,7 @@ public class Shop {
         while (true){
             System.out.println("Nhập id danh mục muốn thêm cho sp");
             Long idCat =InputMethods.getLong();
-            if(catalogService.findIndexById(idCat)!=-1){
+            if(catalogService.findById(idCat)!=null){
                 pro.setCatalog(catalogService.findById(idCat));
                 break;
             }
@@ -192,19 +191,19 @@ public class Shop {
     public static void editProduct() {
         // nhập vào id
         Long id = InputMethods.getLong();
-        int index = productService.findIndexById(id);
-        if (index == -1) {
+        Product pro = productService.findById(id);
+        if (pro == null) {
             System.err.println("id không tồn tại");
             return;
         }
         // cho phép sửa
-        Product pro = productService.findById(id);
+
         displayAllCatalog();
         // nhaapj id danh mucj
         while (true){
             System.out.println("Nhập id danh mục muốn thêm cho sp");
             Long idCat =InputMethods.getLong();
-            if(catalogService.findIndexById(idCat)!=-1){
+            if(catalogService.findById(idCat)!=null){
                 pro.setCatalog(catalogService.findById(idCat));
                 break;
             }
@@ -217,8 +216,7 @@ public class Shop {
     // xóa
     public static void deleteProduct() {
         Long id = InputMethods.getLong();
-        int index = productService.findIndexById(id);
-        if (index == -1) {
+        if (productService.findById(id)==null) {
             System.err.println("id không tồn tại");
             return;
         }
@@ -229,9 +227,7 @@ public class Shop {
         System.out.println("Nhập chuỗi");
         String name =InputMethods.getString();
         for (Product pro : productService.searchByName(name)) {
-            if(pro!=null){
                 System.out.println(pro);
-            }
         }
     }
 }
